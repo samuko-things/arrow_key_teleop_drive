@@ -2,7 +2,7 @@
 
 this is a ros2 teleop package similar to the normal teleop packge but using arrow keys to drive your robot in a fun way. it uses the pynput python library.
 
-# Dependencies
+## Dependencies
 
 ensure the following are installed on your PC before you start cloning and using the package
 
@@ -21,7 +21,7 @@ ensure the following are installed on your PC before you start cloning and using
 - clone (recommended) or Download the repo or in the src folder of your preferred ROS2 workspace.
 
   ```shell
-  git clone https://github.com/samuko-things/mobo_bot.git
+  git clone https://github.com/samuko-things/arrow_key_teleop_drive.git
   ```
 - To build the arrow_key_teleop_drive package, go to the root folder of your ros2 workspace and run the following command below. (DON'T FORGET TO SOURCE YOUR WORKSPACE)
 
@@ -33,7 +33,7 @@ ensure the following are installed on your PC before you start cloning and using
 <br/>
 
 
-## Drive the mobo_bot with teleop
+## Drive your robot with teleop
 
 NOTE that the package publishes to the /cmd_vel topic. It requires you to set the linear velocity (v) and angular velocity (w), you want your robot to move at, as argument to run the package. Below is an example of how to run the package to drive your robot.
 
