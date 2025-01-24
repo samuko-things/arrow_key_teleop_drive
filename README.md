@@ -38,6 +38,28 @@ ensure the following are installed on your PC before you start cloning and using
 NOTE that the package publishes to the /cmd_vel topic. It requires you to set the linear velocity (v) and angular velocity (w), you want your robot to move at, as argument to run the package. Below is an example of how to run the package to drive your robot.
 
   ```shell
-  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.2 1.0
+  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive
   ```
 drive the robot easily using the arrow keys
+
+```
+---------------------------------------------------
+drive around with arrow keys:
+
+  [forward-left]  [forward]    [forward-right]
+                      |
+  [rotate left] -------------- [rotate right]
+                      |
+  [reverse-left]  [reverse]    [reverse-right]
+
+stops when no arrow key is pressed
+
+R - reset to default speed
+
+Q - increase v by +0.05
+Z - reduce v by -0.05
+
+W - increase w by +0.1
+X - reduce w by -0.1
+----------------------------------------------------
+```
