@@ -13,8 +13,9 @@ from pynput.keyboard import Key, Listener
 
 
 arg_msg = """
-enter velocity args in format <linear vel in (m/s)> <angular vel in (rad/sec)>
-        """
+You can also enter velocity args in format
+<linear vel in (m/s)> <angular vel in (rad/sec)>
+"""
 
 def process_args_vel():
   try:
@@ -24,9 +25,15 @@ def process_args_vel():
     print(msg)
     return v, w
   except Exception as e:
-    # print(e)
+    v = 0.1
+    w = 0.5
+    msg = f'using v={v} and w={w}'
+    print(msg)
     print(arg_msg)
-    exit()
+    return v, w
+    # # print(e)
+    # print(arg_msg)
+    # exit()
 
 
 
@@ -47,6 +54,13 @@ drive around with arrow keys:
 
 stops when no arrow key is pressed
 
+R - reset to default speed
+
+Q - increase v by +0.05
+Z - reduce v by -0.05
+
+W - increase w by +0.1
+X - reduce w by -0.1
 ----------------------------------------------------
 """
 
@@ -54,7 +68,7 @@ stops when no arrow key is pressed
 
 class ArrowKeyTeleop(Node):
   def __init__(self):
-    super().__init__(node_name="arrow_key_teleop_drive_node") # initialize the node name
+    super().__init__(node_name="arrow_key_teleop") # initialize the node name
 
     self.default_v, self.default_w = process_args_vel()
     self.v = 0.000
@@ -79,10 +93,13 @@ class ArrowKeyTeleop(Node):
     # ...or, in a non-blocking fashion:
     listener = Listener(on_press=self.on_press, on_release=self.on_release)
     listener.start()
-    # listener.join()
 
     print(msg)
   
+
+  def reset_speed(self):
+        self.speed = self.default_speed
+        self.turn = self.default_turn
 
   def print_speed(self, v, w):
     if self.prev_v == self.v and self.prev_w == self.w:
@@ -95,6 +112,10 @@ class ArrowKeyTeleop(Node):
       print('currently:\tv(m/s)=%f\tw(rad/s)=%f' % (v, w))
       self.prev_v = self.v
       self.prev_w = self.w
+  
+  def reset_speed(self):
+    self.default_v, self.default_w = process_args_vel()
+    print('reset_speed:\tv(m/s)=%f\tw(rad/s)=%f' % (self.default_v, self.default_w))
 
 
   def publish_cmd_vel(self, v, w):
@@ -175,6 +196,36 @@ class ArrowKeyTeleop(Node):
       self.leftPressed = False
       self.rightPressed = True
 
+    if hasattr(key, 'char'):
+      # if key.char in self.speed_ctrl_keys:
+      if key.char == 'R' or key.char == 'r':
+        self.reset_speed()
+
+      elif key.char == 'Q' or key.char == 'q':
+        self.default_v += 0.05
+        if self.default_v > 1.0:
+          self.default_v = 1.0    
+        print('new_speed:\tv(m/s)=%f\tw(rad/s)=%f' % (self.default_v, self.default_w))
+
+      elif key.char == 'Z' or key.char == 'z':
+        self.default_v -= 0.05
+        if self.default_v < 0.05:
+          self.default_v = 0.05
+        print('new_speed:\tv(m/s)=%f\tw(rad/s)=%f' % (self.default_v, self.default_w))
+
+      elif key.char == 'W' or key.char == 'w':
+        self.default_w += 0.1
+        if self.default_w > 3.0:
+          self.default_w = 3.0
+        print('new_speed:\tv(m/s)=%f\tw(rad/s)=%f' % (self.default_v, self.default_w))
+
+      elif key.char == 'X' or key.char == 'x':
+        self.default_w -= 0.1
+        if self.default_w < 0.1:
+          self.default_w = 0.1
+        print('new_speed:\tv(m/s)=%f\tw(rad/s)=%f' % (self.default_v, self.default_w))
+
+
             
   def on_release(self, key):
     if key == Key.up:
@@ -192,69 +243,6 @@ class ArrowKeyTeleop(Node):
     if key == Key.esc:
       # Stop listener
       return False
-
-  # def on_press(self, key):       
-  #   if key == Key.up:
-  #     if (not self.upPressed) and (not self.downPressed) and (not self.leftPressed) and (not self.rightPressed):
-  #       self.upPressed = True
-  #       self.v = self.default_v
-  #       self.w = 0.000
-  #       self.publish_cmd_vel(self.v, self.w)
-            
-  #   if key == Key.down:
-  #     if (not self.upPressed) and (not self.downPressed) and (not self.leftPressed) and (not self.rightPressed):
-  #       self.downPressed = True
-  #       self.v = -self.default_v
-  #       self.w = 0.000
-  #       self.publish_cmd_vel(self.v, self.w)
-
-  #   if key == Key.left:
-  #     if (not self.upPressed) and (not self.downPressed) and (not self.leftPressed) and (not self.rightPressed):
-  #       self.leftPressed = True
-  #       self.v = 0.000
-  #       self.w = self.default_w
-  #       self.publish_cmd_vel(self.v, self.w)
-            
-  #   if key == Key.right:
-  #     if (not self.upPressed) and (not self.downPressed) and (not self.leftPressed) and (not self.rightPressed):
-  #       self.rightPressed = True
-  #       self.v = 0.000
-  #       self.w = -self.default_w
-  #       self.publish_cmd_vel(self.v, self.w)
-
-            
-  # def on_release(self, key):
-  #   if key == Key.up:
-  #     if (self.upPressed) and (not self.downPressed) and (not self.leftPressed) and (not self.rightPressed):
-  #       self.upPressed = False
-  #       self.v = 0.000
-  #       self.w = 0.000
-  #       self.publish_cmd_vel(self.v, self.w)
-            
-  #   if key == Key.down:
-  #     if (not self.upPressed) and (self.downPressed) and (not self.leftPressed) and (not self.rightPressed):
-  #       self.downPressed = False
-  #       self.v = 0.000
-  #       self.w = 0.000
-  #       self.publish_cmd_vel(self.v, self.w)
-
-  #   if key == Key.left:
-  #     if (not self.upPressed) and (not self.downPressed) and (self.leftPressed) and (not self.rightPressed):
-  #       self.leftPressed = False
-  #       self.v = 0.000
-  #       self.w = 0.000
-  #       self.publish_cmd_vel(self.v, self.w)
-  
-  #   if key == Key.right:
-  #     if (not self.upPressed) and (not self.downPressed) and (not self.leftPressed) and (self.rightPressed):
-  #       self.rightPressed = False
-  #       self.v = 0.000
-  #       self.w = 0.000
-  #       self.publish_cmd_vel(self.v, self.w)
-
-  #   if key == Key.esc:
-  #     # Stop listener
-  #     return False
         
 
 
@@ -267,15 +255,15 @@ def main(args=None):
   rclpy.init(args=args)
 
   # Create the node
-  arrow_key_teleop = ArrowKeyTeleop()
+  mobo_bot_teleop = ArrowKeyTeleop()
 
   # spin the node so the call back function is called
-  rclpy.spin(arrow_key_teleop)
+  rclpy.spin(mobo_bot_teleop)
 
   # Destroy the node explicitly
   # (optional - otherwise it will be done automatically
   # when the garbage collector destroys the node object)
-  arrow_key_teleop.destroy_node()
+  mobo_bot_teleop.destroy_node()
 
   # Shutdown the ROS client library for Python
   rclpy.shutdown() 

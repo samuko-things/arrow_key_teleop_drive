@@ -15,12 +15,14 @@ setup(
         (os.path.join('share', package_name), glob('launch/*launch.[pxy][yma]*')),
     ],
     install_requires=['setuptools'],
+    extras_require={
+        'test': ['pytest'],
+    },
     zip_safe=True,
     maintainer='samuko',
     maintainer_email='samuel.c.agba@gmail.com',
     description='TODO: Package description',
     license='TODO: License declaration',
-    tests_require=['pytest'],
     entry_points={
         'console_scripts': [
             # 'executable_name = package_name.python_file_name:main'
