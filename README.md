@@ -4,15 +4,14 @@ this is a ros2 teleop package similar to the normal teleop packge but using arro
 
 ## Dependencies
 
-ensure the following are installed on your PC before you start cloning and using the package
+the **arrow_key_teleop_drive** depends on the pynput python library
 
-- setuptools for ros2 python packages
+- install the pynput python library for keyboard interfacing
 
   ```shell
-  pip3 install setuptools==58.2.0
+  sudo apt install python3-pynput
   ```
-- pynput python library for keyboard interfacing
-
+  or
   ```shell
   pip3 install pynput
   ```
@@ -21,17 +20,17 @@ ensure the following are installed on your PC before you start cloning and using
 - clone (recommended) or Download the repo or in the src folder of your preferred ROS2 workspace.
 
   ```shell
+  cd ~/<your_ros_workspace>/src
   git clone https://github.com/samuko-things/arrow_key_teleop_drive.git
   ```
 - To build the arrow_key_teleop_drive package, go to the root folder of your ros2 workspace and run the following command below. (DON'T FORGET TO SOURCE YOUR WORKSPACE)
 
   ```shell
+  cd ~/<your_ros_workspace>/
   colcon build --packages-select arrow_key_teleop_drive --symlink-install
   ```
 
 <br/>
-<br/>
-
 
 ## Drive your robot with teleop
 
