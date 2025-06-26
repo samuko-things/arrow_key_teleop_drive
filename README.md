@@ -40,6 +40,12 @@ NOTE that the package publishes to the /cmd_vel topic. It requires you to set th
   ```shell
   ros2 run arrow_key_teleop_drive arrow_key_teleop_drive
   ```
+  ```shell
+  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive <v in m/s> <w in rad/sec>
+  ```
+  ```shell
+  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.2 0.8
+  ```
 drive the robot easily using the arrow keys
 
 ```
