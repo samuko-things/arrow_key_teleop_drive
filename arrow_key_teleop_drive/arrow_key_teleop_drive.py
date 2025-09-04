@@ -3,7 +3,8 @@ import sys
 import rclpy
 from rclpy.node import Node
 
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import TwistStamped
+from std_msgs.msg import Header
 
 from pynput.keyboard import Key, Listener
 
@@ -77,7 +78,7 @@ class ArrowKeyTeleop(Node):
     self.prev_v = self.v
     self.prev_w = self.w
 
-    self.send_cmd = self.create_publisher(Twist, 'cmd_vel', 10)
+    self.send_cmd = self.create_publisher(TwistStamped, '/cmd_vel', 10)
 
     timer_period = 0.1  # seconds
     self.timer = self.create_timer(timer_period, self.timer_callback)
@@ -119,13 +120,16 @@ class ArrowKeyTeleop(Node):
 
 
   def publish_cmd_vel(self, v, w):
-    cmd_vel = Twist()
-    cmd_vel.linear.x = v
-    cmd_vel.linear.y = 0.000
-    cmd_vel.linear.z = 0.000
-    cmd_vel.angular.x = 0.000
-    cmd_vel.angular.y = 0.000
-    cmd_vel.angular.z = w
+    cmd_vel = TwistStamped()
+    cmd_vel.header = Header()
+    cmd_vel.header.stamp = self.get_clock().now().to_msg()
+    cmd_vel.header.frame_id = 'odom'
+    cmd_vel.twist.linear.x = v
+    cmd_vel.twist.linear.y = 0.000
+    cmd_vel.twist.linear.z = 0.000
+    cmd_vel.twist.angular.x = 0.000
+    cmd_vel.twist.angular.y = 0.000
+    cmd_vel.twist.angular.z = w
     self.send_cmd.publish(cmd_vel)
 
     self.print_speed(v, w)
