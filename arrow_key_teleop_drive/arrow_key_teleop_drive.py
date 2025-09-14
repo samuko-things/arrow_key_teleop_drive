@@ -13,7 +13,8 @@ from pynput.keyboard import Key, Listener
 arg_msg = """
 Expected arguments:
 <linear vel in (m/s)> <angular vel in (rad/sec)> <use_stamped - true(1)/false(0)>
-example -> 0.1 0.7 1
+example arg -> 0.1 0.7 1
+example arg -> 0.1 0.7 0
 """
 
 def process_args_vel():
