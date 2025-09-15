@@ -3,37 +3,35 @@ import sys
 import rclpy
 from rclpy.node import Node
 
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import TwistStamped, Twist
+from std_msgs.msg import Header
 
 from pynput.keyboard import Key, Listener
 
 
 
-
-
-
 arg_msg = """
-You can also enter velocity args in format
-<linear vel in (m/s)> <angular vel in (rad/sec)>
+Expected arguments:
+<linear vel in (m/s)> <angular vel in (rad/sec)> <use_stamped - true(1)/false(0)>
+example arg -> 0.1 0.7 1
+example arg -> 0.1 0.7 0
 """
 
 def process_args_vel():
   try:
     v = float(sys.argv[1])
     w = float(sys.argv[2])
-    msg = f'using v={v} and w={w}'
+    use_stamped = bool(int(sys.argv[3]))
+    if use_stamped == True:
+      use_stamped_msg = "Publishing TwistStamped Msg on /cmd_vel"
+    else:
+      use_stamped_msg = "Publishing Twist Msg on /cmd_vel"
+    msg = f'{use_stamped_msg}\nv={v} and w={w}'
     print(msg)
-    return v, w
+    return use_stamped_msg, use_stamped, v, w
   except Exception as e:
-    v = 0.1
-    w = 0.5
-    msg = f'using v={v} and w={w}'
-    print(msg)
     print(arg_msg)
-    return v, w
-    # # print(e)
-    # print(arg_msg)
-    # exit()
+    exit()
 
 
 
@@ -70,16 +68,19 @@ class ArrowKeyTeleop(Node):
   def __init__(self):
     super().__init__(node_name="arrow_key_teleop") # initialize the node name
 
-    self.default_v, self.default_w = process_args_vel()
+    self.use_stamped_msg, self.use_stamped, self.default_v, self.default_w = process_args_vel()
     self.v = 0.000
     self.w = 0.000
 
     self.prev_v = self.v
     self.prev_w = self.w
 
-    self.send_cmd = self.create_publisher(Twist, 'cmd_vel', 10)
+    if self.use_stamped:
+      self.send_cmd = self.create_publisher(TwistStamped, '/cmd_vel', 10)
+    else:
+      self.send_cmd = self.create_publisher(Twist, '/cmd_vel', 10)
 
-    timer_period = 0.1  # seconds
+    timer_period = 0.05  # seconds
     self.timer = self.create_timer(timer_period, self.timer_callback)
     
     self.status = 0
@@ -109,24 +110,37 @@ class ArrowKeyTeleop(Node):
         print(msg)
       self.status = (self.status + 1) % 21
 
-      print('currently:\tv(m/s)=%f\tw(rad/s)=%f' % (v, w))
+      print(f'{self.use_stamped_msg}\ncurrent_speed:\tv(m/s)={v}\tw(rad/s)={w}')
       self.prev_v = self.v
       self.prev_w = self.w
   
   def reset_speed(self):
-    self.default_v, self.default_w = process_args_vel()
-    print('reset_speed:\tv(m/s)=%f\tw(rad/s)=%f' % (self.default_v, self.default_w))
+    self.use_stamped_msg, self.use_stamped, self.default_v, self.default_w = process_args_vel()
+    print(f'{self.use_stamped_msg}\nreset_speed:\tv(m/s)={self.default_v}\tw(rad/s)={self.default_w}')
 
 
   def publish_cmd_vel(self, v, w):
-    cmd_vel = Twist()
-    cmd_vel.linear.x = v
-    cmd_vel.linear.y = 0.000
-    cmd_vel.linear.z = 0.000
-    cmd_vel.angular.x = 0.000
-    cmd_vel.angular.y = 0.000
-    cmd_vel.angular.z = w
-    self.send_cmd.publish(cmd_vel)
+    if self.use_stamped:
+      cmd_vel = TwistStamped()
+      cmd_vel.header = Header()
+      cmd_vel.header.stamp = self.get_clock().now().to_msg()
+      cmd_vel.header.frame_id = 'odom'
+      cmd_vel.twist.linear.x = v
+      cmd_vel.twist.linear.y = 0.000
+      cmd_vel.twist.linear.z = 0.000
+      cmd_vel.twist.angular.x = 0.000
+      cmd_vel.twist.angular.y = 0.000
+      cmd_vel.twist.angular.z = w
+      self.send_cmd.publish(cmd_vel)
+    else:
+      cmd_vel = Twist()
+      cmd_vel.linear.x = v
+      cmd_vel.linear.y = 0.000
+      cmd_vel.linear.z = 0.000
+      cmd_vel.angular.x = 0.000
+      cmd_vel.angular.y = 0.000
+      cmd_vel.angular.z = w
+      self.send_cmd.publish(cmd_vel)
 
     self.print_speed(v, w)
 

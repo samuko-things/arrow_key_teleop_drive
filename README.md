@@ -1,20 +1,16 @@
 # arrow_key_teleop_drive
 
 this is a ros2 teleop package similar to the normal teleop packge but using arrow keys to drive your robot in a fun way. it uses the pynput python library.
+it publishes **Twist** or **TwistStamped** Messages on **/cmd_vel** topic
 
 ## Dependencies
 
 ensure the following are installed on your PC before you start cloning and using the package
 
-- setuptools for ros2 python packages
-
-  ```shell
-  pip3 install setuptools==58.2.0
-  ```
 - pynput python library for keyboard interfacing
 
   ```shell
-  pip3 install pynput
+  sudo apt install python3-pynput
   ```
 
 ## Setting up the package in your ros workspace
@@ -38,13 +34,16 @@ ensure the following are installed on your PC before you start cloning and using
 NOTE that the package publishes to the /cmd_vel topic. It requires you to set the linear velocity (v) and angular velocity (w), you want your robot to move at, as argument to run the package. Below is an example of how to run the package to drive your robot.
 
   ```shell
-  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive
+  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive <v in m/s> <w in rad/sec> <use_stamped - true(1)/false(0)>
   ```
+- sample publish stamped velocity (geomatry_msg/msg/TwistStamped)
+  
   ```shell
-  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive <v in m/s> <w in rad/sec>
+  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.2 1.0 1
   ```
+- sample publish unstamped velocity (geomatry_msg/msg/Twist)
   ```shell
-  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.2 0.8
+  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.2 1.0 0
   ```
 drive the robot easily using the arrow keys
 
