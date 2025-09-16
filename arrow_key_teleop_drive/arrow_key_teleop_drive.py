@@ -23,9 +23,9 @@ def process_args_vel():
     w = float(sys.argv[2])
     use_stamped = bool(int(sys.argv[3]))
     if use_stamped == True:
-      use_stamped_msg = "Publishing TwistStamped Msg on /cmd_vel"
+      use_stamped_msg = "Publishing TwistStamped Msg on /cmd_vel_teleop"
     else:
-      use_stamped_msg = "Publishing Twist Msg on /cmd_vel"
+      use_stamped_msg = "Publishing Twist Msg on /cmd_vel_teleop"
     msg = f'{use_stamped_msg}\nv={v} and w={w}'
     print(msg)
     return use_stamped_msg, use_stamped, v, w
@@ -76,9 +76,9 @@ class ArrowKeyTeleop(Node):
     self.prev_w = self.w
 
     if self.use_stamped:
-      self.send_cmd = self.create_publisher(TwistStamped, '/cmd_vel', 10)
+      self.send_cmd = self.create_publisher(TwistStamped, '/cmd_vel_teleop', 10)
     else:
-      self.send_cmd = self.create_publisher(Twist, '/cmd_vel', 10)
+      self.send_cmd = self.create_publisher(Twist, '/cmd_vel_teleop', 10)
 
     timer_period = 0.05  # seconds
     self.timer = self.create_timer(timer_period, self.timer_callback)
