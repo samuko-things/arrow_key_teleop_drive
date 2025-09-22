@@ -1,7 +1,7 @@
 # arrow_key_teleop_drive
 
 this is a ros2 teleop package similar to the normal teleop packge but using arrow keys to drive your robot in a fun way. it uses the pynput python library.
-it publishes **Twist** or **TwistStamped** Messages on **/cmd_vel** topic
+it publishes **Twist** or **TwistStamped** Messages on **/cmd_vel_teleop** topic
 
 ## Dependencies
 
@@ -17,7 +17,7 @@ ensure the following are installed on your PC before you start cloning and using
 - clone (recommended) or Download the repo or in the src folder of your preferred ROS2 workspace.
 
   ```shell
-  git clone https://github.com/samuko-things/arrow_key_teleop_drive.git
+  git clone -b mobo-bot-teleop https://github.com/samuko-things/arrow_key_teleop_drive.git
   ```
 - To build the arrow_key_teleop_drive package, go to the root folder of your ros2 workspace and run the following command below. (DON'T FORGET TO SOURCE YOUR WORKSPACE)
 
