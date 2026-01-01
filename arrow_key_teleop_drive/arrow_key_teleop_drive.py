@@ -13,8 +13,8 @@ from pynput.keyboard import Key, Listener
 arg_msg = """
 Expected arguments:
 <linear vel in (m/s)> <angular vel in (rad/sec)> <use_stamped - true/false>
-example arg -> 0.1 0.7 true
-example arg -> 0.1 0.7 false
+example arg -> 0.125 0.7 true
+example arg -> 0.125 0.7 false
 """
 
 def process_args_vel():
@@ -28,7 +28,7 @@ def process_args_vel():
       use_stamped = True
     else:
       use_stamped = True
-      
+
     if use_stamped == True:
       use_stamped_msg = "Publishing TwistStamped Msg on /cmd_vel_teleop"
     else:

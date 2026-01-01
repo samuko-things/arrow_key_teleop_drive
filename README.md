@@ -34,16 +34,16 @@ ensure the following are installed on your PC before you start cloning and using
 NOTE that the package publishes to the /cmd_vel topic. It requires you to set the linear velocity (v) and angular velocity (w), you want your robot to move at, as argument to run the package. Below is an example of how to run the package to drive your robot.
 
   ```shell
-  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive <v in m/s> <w in rad/sec> <use_stamped - true(1)/false(0)>
+  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive <v in m/s> <w in rad/sec> <use_stamped - true/false>
   ```
 - sample publish stamped velocity (geomatry_msg/msg/TwistStamped)
   
   ```shell
-  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.2 1.0 1
+  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.125 0.7 true
   ```
 - sample publish unstamped velocity (geomatry_msg/msg/Twist)
   ```shell
-  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.2 1.0 0
+  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.125 0.7 false
   ```
 drive the robot easily using the arrow keys
 
