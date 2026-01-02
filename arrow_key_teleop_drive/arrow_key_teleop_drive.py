@@ -12,20 +12,28 @@ from pynput.keyboard import Key, Listener
 
 arg_msg = """
 Expected arguments:
-<linear vel in (m/s)> <angular vel in (rad/sec)> <use_stamped - true(1)/false(0)>
-example arg -> 0.1 0.7 1
-example arg -> 0.1 0.7 0
+<linear vel in (m/s)> <angular vel in (rad/sec)> <use_stamped - true/false>
+example arg -> 0.125 0.7 true
+example arg -> 0.125 0.7 false
 """
 
 def process_args_vel():
   try:
     v = float(sys.argv[1])
     w = float(sys.argv[2])
-    use_stamped = bool(int(sys.argv[3]))
-    if use_stamped == True:
-      use_stamped_msg = "Publishing TwistStamped Msg on /cmd_vel"
+
+    if sys.argv[3] == "false" or sys.argv[3] == "False":
+      use_stamped = False
+    elif sys.argv[3] == "true" or sys.argv[3] == "True":
+      use_stamped = True
     else:
-      use_stamped_msg = "Publishing Twist Msg on /cmd_vel"
+      use_stamped = True
+
+    if use_stamped == True:
+      use_stamped_msg = "Publishing TwistStamped Msg on /cmd_vel_teleop"
+    else:
+      use_stamped_msg = "Publishing Twist Msg on /cmd_vel_teleop"
+
     msg = f'{use_stamped_msg}\nv={v} and w={w}'
     print(msg)
     return use_stamped_msg, use_stamped, v, w
@@ -76,9 +84,9 @@ class ArrowKeyTeleop(Node):
     self.prev_w = self.w
 
     if self.use_stamped:
-      self.send_cmd = self.create_publisher(TwistStamped, '/cmd_vel', 10)
+      self.send_cmd = self.create_publisher(TwistStamped, '/cmd_vel_teleop', 10)
     else:
-      self.send_cmd = self.create_publisher(Twist, '/cmd_vel', 10)
+      self.send_cmd = self.create_publisher(Twist, '/cmd_vel_teleop', 10)
 
     timer_period = 0.05  # seconds
     self.timer = self.create_timer(timer_period, self.timer_callback)
