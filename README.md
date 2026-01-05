@@ -41,9 +41,17 @@ NOTE that the package publishes to the /cmd_vel topic. It requires you to set th
   ```shell
   ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.125 0.7 true
   ```
+  OR (with remapping)
+  ```shell
+  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.125 0.7 true --ros-args -r /cmd_vel_teleop:=/cmd_vel
+  ```
 - sample publish unstamped velocity (geomatry_msg/msg/Twist)
   ```shell
   ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.125 0.7 false
+  ```
+  OR (with remapping)
+  ```shell
+  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.125 0.7 false --ros-args -r /cmd_vel_teleop:=/cmd_vel
   ```
 drive the robot easily using the arrow keys
 
