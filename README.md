@@ -56,7 +56,13 @@ NOTE that the package publishes to the /cmd_vel topic. It requires you to set th
 drive the robot easily using the arrow keys
 
 ```
----------------------------------------------------
+This node takes arrow keypresses from the keyboard 
+and publishes TwistSTamped or Twist (velocicty comands)
+messages to control your diff drive robot. It makes use
+of the  pynput keyboard python library
+(BOTH HOLONOMIC AND NON HOLONOMIC MOBILE ROBOT)
+
+-------------------------------------------------------
 drive around with arrow keys:
 
   [forward-left]  [forward]    [forward-right]
@@ -74,5 +80,8 @@ Z - reduce v by -0.05
 
 W - increase w by +0.1
 X - reduce w by -0.1
-----------------------------------------------------
+
+For Holonomic mode (strafing), hold down SHIFT KEY
+while driving
+--------------------------------------------------------
 ```

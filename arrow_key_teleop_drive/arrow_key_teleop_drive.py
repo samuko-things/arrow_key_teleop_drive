@@ -45,11 +45,12 @@ def process_args_vel():
 
 msg = """
 This node takes arrow keypresses from the keyboard 
-and publishes Twist (velocicty comands) messages to
-control your diff drive robot. It makes use of the 
-pynput keyboard python library
+and publishes TwistSTamped or Twist (velocicty comands)
+messages to control your diff drive robot. It makes use
+of the  pynput keyboard python library
+(BOTH HOLONOMIC AND NON HOLONOMIC MOBILE ROBOT)
 
----------------------------------------------------
+-------------------------------------------------------
 drive around with arrow keys:
 
   [forward-left]  [forward]    [forward-right]
@@ -67,7 +68,10 @@ Z - reduce v by -0.05
 
 W - increase w by +0.1
 X - reduce w by -0.1
-----------------------------------------------------
+
+For Holonomic mode (strafing), hold down SHIFT KEY
+while driving
+--------------------------------------------------------
 """
 
 
@@ -93,6 +97,7 @@ class ArrowKeyTeleop(Node):
     
     self.status = 0
 
+    self.holonomic_mode = False
     self.upPressed = False
     self.downPressed = False
     self.leftPressed = False
@@ -121,6 +126,18 @@ class ArrowKeyTeleop(Node):
       print(f'{self.use_stamped_msg}\ncurrent_speed:\tv(m/s)={v}\tw(rad/s)={w}')
       self.prev_v = self.v
       self.prev_w = self.w
+
+  def print_speed_holonomic(self, vx, vy):
+    if self.prev_v == self.v and self.prev_w == self.w:
+      pass
+    else:
+      if (self.status == 20):
+        print(msg)
+      self.status = (self.status + 1) % 21
+
+      print(f'{self.use_stamped_msg}\ncurrent_speed(h):\tvx(m/s)={vx}\tvy(rad/s)={vy}')
+      self.prev_v = self.v
+      self.prev_w = self.w
   
   def reset_speed(self):
     self.use_stamped_msg, self.use_stamped, self.default_v, self.default_w = process_args_vel()
@@ -128,80 +145,137 @@ class ArrowKeyTeleop(Node):
 
 
   def publish_cmd_vel(self, v, w):
+    if not self.holonomic_mode:
+      if self.use_stamped:
+        cmd_vel = TwistStamped()
+        cmd_vel.header = Header()
+        cmd_vel.header.stamp = self.get_clock().now().to_msg()
+        cmd_vel.header.frame_id = 'odom'
+        cmd_vel.twist.linear.x = v
+        cmd_vel.twist.linear.y = 0.000
+        cmd_vel.twist.linear.z = 0.000
+        cmd_vel.twist.angular.x = 0.000
+        cmd_vel.twist.angular.y = 0.000
+        cmd_vel.twist.angular.z = w
+        self.send_cmd.publish(cmd_vel)
+      else:
+        cmd_vel = Twist()
+        cmd_vel.linear.x = v
+        cmd_vel.linear.y = 0.000
+        cmd_vel.linear.z = 0.000
+        cmd_vel.angular.x = 0.000
+        cmd_vel.angular.y = 0.000
+        cmd_vel.angular.z = w
+        self.send_cmd.publish(cmd_vel)
+
+    self.print_speed(v, w)
+
+  
+  def publish_cmd_vel_holonomic(self, vx, vy):
     if self.use_stamped:
       cmd_vel = TwistStamped()
       cmd_vel.header = Header()
       cmd_vel.header.stamp = self.get_clock().now().to_msg()
       cmd_vel.header.frame_id = 'odom'
-      cmd_vel.twist.linear.x = v
-      cmd_vel.twist.linear.y = 0.000
+      cmd_vel.twist.linear.x = vx
+      cmd_vel.twist.linear.y = vy
       cmd_vel.twist.linear.z = 0.000
       cmd_vel.twist.angular.x = 0.000
       cmd_vel.twist.angular.y = 0.000
-      cmd_vel.twist.angular.z = w
+      cmd_vel.twist.angular.z = 0.000
       self.send_cmd.publish(cmd_vel)
     else:
       cmd_vel = Twist()
-      cmd_vel.linear.x = v
-      cmd_vel.linear.y = 0.000
+      cmd_vel.linear.x = vx
+      cmd_vel.linear.y = vy
       cmd_vel.linear.z = 0.000
       cmd_vel.angular.x = 0.000
       cmd_vel.angular.y = 0.000
-      cmd_vel.angular.z = w
+      cmd_vel.angular.z = 0.000
       self.send_cmd.publish(cmd_vel)
 
-    self.print_speed(v, w)
+    self.print_speed_holonomic(vx, vy)
 
 
   def timer_callback(self):
     if self.upPressed and self.leftPressed:
       self.v = self.default_v
       self.w = self.default_w
-      self.publish_cmd_vel(self.v, self.w)
+      if self.holonomic_mode:
+        self.publish_cmd_vel_holonomic(self.default_v, self.default_v)
+      else:
+        self.publish_cmd_vel(self.v, self.w)
 
     elif self.upPressed and self.rightPressed:
       self.v = self.default_v
       self.w = -self.default_w
-      self.publish_cmd_vel(self.v, self.w)
+      if self.holonomic_mode:
+        self.publish_cmd_vel_holonomic(self.default_v, -self.default_v)
+      else:
+        self.publish_cmd_vel(self.v, self.w)
 
     elif self.downPressed and self.leftPressed:
       self.v = -self.default_v
       self.w = self.default_w
-      self.publish_cmd_vel(self.v, self.w)
+      if self.holonomic_mode:
+        self.publish_cmd_vel_holonomic(-self.default_v, self.default_v)
+      else:
+        self.publish_cmd_vel(self.v, self.w)
 
     elif self.downPressed and self.rightPressed:
       self.v = -self.default_v
       self.w = -self.default_w
-      self.publish_cmd_vel(self.v, self.w)
+      if self.holonomic_mode:
+        self.publish_cmd_vel_holonomic(-self.default_v, -self.default_v)
+      else:
+        self.publish_cmd_vel(self.v, self.w)
 
     elif self.upPressed:
       self.v = self.default_v
       self.w = 0.000
-      self.publish_cmd_vel(self.v, self.w)
+      if self.holonomic_mode:
+        self.publish_cmd_vel_holonomic(self.default_v, 0.000)
+      else:
+        self.publish_cmd_vel(self.v, self.w)
     
     elif self.downPressed:
       self.v = -self.default_v
       self.w = 0.000
-      self.publish_cmd_vel(self.v, self.w)
+      if self.holonomic_mode:
+        self.publish_cmd_vel_holonomic(-self.default_v, 0.000)
+      else:
+        self.publish_cmd_vel(self.v, self.w)
 
     elif self.leftPressed:
       self.v = 0.000
       self.w = self.default_w
-      self.publish_cmd_vel(self.v, self.w)
+      if self.holonomic_mode:
+        self.publish_cmd_vel_holonomic(0.000, self.default_v)
+      else:
+        self.publish_cmd_vel(self.v, self.w)
     
     elif self.rightPressed:
       self.v = 0.000
       self.w = -self.default_w
-      self.publish_cmd_vel(self.v, self.w)
+      if self.holonomic_mode:
+        self.publish_cmd_vel_holonomic(0.000, -self.default_v)
+      else:
+        self.publish_cmd_vel(self.v, self.w)
 
     else:
       self.v = 0.000
       self.w = 0.000
-      self.publish_cmd_vel(self.v, self.w)
+      if self.holonomic_mode:
+        self.publish_cmd_vel_holonomic(0.000, 0.000)
+      else:
+        self.publish_cmd_vel(self.v, self.w)
 
 
 
-  def on_press(self, key):       
+  def on_press(self, key):
+    if key == Key.shift:
+      self.holonomic_mode = True
+
     if key == Key.up:
       self.upPressed = True
       self.downPressed = False
@@ -250,6 +324,9 @@ class ArrowKeyTeleop(Node):
 
             
   def on_release(self, key):
+    if key == Key.shift:
+      self.holonomic_mode = False
+
     if key == Key.up:
       self.upPressed = False
             
