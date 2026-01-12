@@ -17,7 +17,7 @@ ensure the following are installed on your PC before you start cloning and using
 - clone (recommended) or Download the repo or in the src folder of your preferred ROS2 workspace.
 
   ```shell
-  git clone -b mobo-bot-teleop https://github.com/samuko-things/arrow_key_teleop_drive.git
+  git clone https://github.com/samuko-things/arrow_key_teleop_drive.git
   ```
 - To build the arrow_key_teleop_drive package, go to the root folder of your ros2 workspace and run the following command below. (DON'T FORGET TO SOURCE YOUR WORKSPACE)
 
@@ -34,34 +34,34 @@ ensure the following are installed on your PC before you start cloning and using
 NOTE that the package publishes to the /cmd_vel topic. It requires you to set the linear velocity (v) and angular velocity (w), you want your robot to move at, as argument to run the package. Below is an example of how to run the package to drive your robot.
 
   ```shell
-  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive <v in m/s> <w in rad/sec> <use_stamped - true/false>
+  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive <v in m/s> <w in rad/sec> <use_stamped_vel - true|false>
   ```
 - sample publish stamped velocity (geomatry_msg/msg/TwistStamped)
   
   ```shell
-  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.125 0.7 true
+  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.2 0.5 true
   ```
   OR (with remapping)
   ```shell
-  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.125 0.7 true --ros-args -r /cmd_vel_teleop:=/cmd_vel
+  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.2 0.5 true --ros-args -r /cmd_vel_teleop:=/cmd_vel
   ```
 - sample publish unstamped velocity (geomatry_msg/msg/Twist)
   ```shell
-  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.125 0.7 false
+  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.2 0.5 false
   ```
   OR (with remapping)
   ```shell
-  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.125 0.7 false --ros-args -r /cmd_vel_teleop:=/cmd_vel
+  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.2 0.5 false --ros-args -r /cmd_vel_teleop:=/cmd_vel
   ```
 drive the robot easily using the arrow keys
 
 ```
 This node takes arrow keypresses from the keyboard 
 and publishes TwistSTamped or Twist (velocicty comands)
-messages to control your diff drive robot. It makes use
-of the  pynput keyboard python library
-(BOTH HOLONOMIC AND NON HOLONOMIC MOBILE ROBOT)
+messages to control your robot. It makes use of the  
+pynput keyboard python library
 
+NOTE!: it runs when terminal is not in focus 
 -------------------------------------------------------
 drive around with arrow keys:
 
@@ -73,15 +73,14 @@ drive around with arrow keys:
 
 stops when no arrow key is pressed
 
-R - reset to default speed
-
-Q - increase v by +0.05
-Z - reduce v by -0.05
-
-W - increase w by +0.1
-X - reduce w by -0.1
-
-For Holonomic mode (strafing), hold down SHIFT KEY
-while driving
+H - toggle Holonomic (Straffing) Mode
+Q - quit (ctrl C)
 --------------------------------------------------------
 ```
+
+
+## Possible Future Improvements
+- using ros2 params
+- adding speed control (increment and decrement)
+- adding speed ramping
+- etc.
