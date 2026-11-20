@@ -16,7 +16,11 @@ ensure the following are installed on your PC before you start cloning and using
 
 ## Setting up the package in your ros workspace
 
-- fork and clone the repo or in the src folder of your preferred ROS2 workspace.
+- clone the repo or in the src folder of your preferred ROS2 workspace.
+
+```shell
+git clone https://github.com/samuko-things/arrow_key_teleop_drive.git
+```
 
 - To build the arrow_key_teleop_drive package, go to the root folder of your ros2 workspace and run the following command below. (DON'T FORGET TO SOURCE YOUR WORKSPACE)
 
