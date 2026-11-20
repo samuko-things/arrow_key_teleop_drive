@@ -1,7 +1,7 @@
 # arrow_key_teleop_drive
 
 this is a ros2 teleop package similar to the normal teleop packge but using arrow keys to drive your robot in a fun way. it uses the pynput python library.
-it publishes **Twist** or **TwistStamped** Messages on **/cmd_vel_teleop** topic
+
 
 ## Dependencies
 
@@ -13,47 +13,19 @@ ensure the following are installed on your PC before you start cloning and using
   sudo apt install python3-pynput
   ```
 
-## Setting up the package in your ros workspace
-- clone (recommended) or Download the repo or in the src folder of your preferred ROS2 workspace.
 
-  ```shell
-  git clone https://github.com/samuko-things/arrow_key_teleop_drive.git
-  ```
+## Setting up the package in your ros workspace
+
+- fork and clone the repo or in the src folder of your preferred ROS2 workspace.
+
 - To build the arrow_key_teleop_drive package, go to the root folder of your ros2 workspace and run the following command below. (DON'T FORGET TO SOURCE YOUR WORKSPACE)
 
-  ```shell
-  colcon build --packages-select arrow_key_teleop_drive --symlink-install
-  ```
-
-<br/>
-<br/>
+```shell
+colcon build --packages-select arrow_key_teleop_drive --symlink-install
+```
 
 
 ## Drive your robot with teleop
-
-NOTE that the package publishes to the /cmd_vel topic. It requires you to set the linear velocity (v) and angular velocity (w), you want your robot to move at, as argument to run the package. Below is an example of how to run the package to drive your robot.
-
-  ```shell
-  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive <v in m/s> <w in rad/sec> <use_stamped_vel - true|false>
-  ```
-- sample publish stamped velocity (geomatry_msg/msg/TwistStamped)
-  
-  ```shell
-  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.2 0.5 true
-  ```
-  OR (with remapping)
-  ```shell
-  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.2 0.5 true --ros-args -r /cmd_vel_teleop:=/cmd_vel
-  ```
-- sample publish unstamped velocity (geomatry_msg/msg/Twist)
-  ```shell
-  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.2 0.5 false
-  ```
-  OR (with remapping)
-  ```shell
-  ros2 run arrow_key_teleop_drive arrow_key_teleop_drive 0.2 0.5 false --ros-args -r /cmd_vel_teleop:=/cmd_vel
-  ```
-drive the robot easily using the arrow keys
 
 ```
 This node takes arrow keypresses from the keyboard 
@@ -73,14 +45,50 @@ drive around with arrow keys:
 
 stops when no arrow key is pressed
 
+q/z : increase/decrease both speeds by 10%
+w/x : increase/decrease only linear speed by 10%
+e/c : increase/decrease only angular speed by 10%
+
 H - toggle Holonomic (Straffing) Mode
-Q - quit (ctrl C)
+CTRL+C - quit program
 --------------------------------------------------------
 ```
 
+- basic telop node launch
+
+```shell
+ros2 launch arrow_key_teleop_drive arrow_key_teleop_drive.launch.py
+```
+
+- sample launch with parameters
+  
+```shell
+ros2 launch arrow_key_teleop_drive arrow_key_teleop_drive.launch.py speed:=0.25 turn:=0.8 topic:=cmd_vel_teleop stamped:=True frame_id:=odom
+```
+
+## Parameters
+
+- **stamped** (bool, default: false)
+
+> If false (the default), publish a geometry_msgs/msg/Twist message. If true, publish a geometry_msgs/msg/TwistStamped message.
+
+- **frame_id** (string, default: '')
+
+> When stamped is true, the frame_id to use when publishing the geometry_msgs/msg/TwistStamped message.
+
+- **speed** (double, default: 0.5)
+
+> The speed the node starts with by default.
+
+- **turn** (double, default: 1.0)
+
+> The turn rate (rad/s) the node starts with by default.
+
+- **topic** (string, default: cmd_vel)
+
+> Topic you want to publish to.
+
 
 ## Possible Future Improvements
-- using ros2 params
-- adding speed control (increment and decrement)
 - adding speed ramping
 - etc.
